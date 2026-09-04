@@ -1,0 +1,161 @@
+{
+  "package": "silviosln/arbor-validator",
+  "name": "Arbor Validator",
+  "description": "Modern, framework-agnostic PHP 8.3+ validation library combining Zod-like fluent schemas with typed DTOs and native PHP 8 Attributes.",
+  "php_version": "^8.3",
+  "license": "MIT",
+  "entry_points": {
+    "ArborValidator": {
+      "class": "Arbor\\Validator\\ArborValidator",
+      "methods": [
+        {
+          "name": "validate",
+          "signature": "validate(string|Schema|array $target, mixed $data, ?string $locale = null): ValidationResult",
+          "parameters": [
+            {"name": "target", "type": "class-string<T>|Schema|array<string, Schema>", "required": true},
+            {"name": "data", "type": "mixed", "required": true},
+            {"name": "locale", "type": "?string", "default": "null"}
+          ],
+          "returns": "ValidationResult",
+          "description": "Validates data against a DTO class, Schema, or shape array without throwing exceptions."
+        },
+        {
+          "name": "parse",
+          "signature": "parse(string|Schema|array $target, mixed $data, ?string $locale = null): mixed",
+          "parameters": [
+            {"name": "target", "type": "class-string<T>|Schema|array<string, Schema>", "required": true},
+            {"name": "data", "type": "mixed", "required": true},
+            {"name": "locale", "type": "?string", "default": "null"}
+          ],
+          "returns": "T|mixed",
+          "throws": ["Arbor\\Validator\\Exceptions\\ValidationException"],
+          "description": "Validates data and returns DTO instance or sanitized array; throws ValidationException on failure."
+        },
+        {
+          "name": "setLocale",
+          "signature": "setLocale(string $locale): void",
+          "parameters": [
+            {"name": "locale", "type": "string", "required": true}
+          ],
+          "returns": "void",
+          "description": "Sets global default locale for error messages."
+        },
+        {
+          "name": "addMessages",
+          "signature": "addMessages(string $locale, array $messages): void",
+          "parameters": [
+            {"name": "locale", "type": "string", "required": true},
+            {"name": "messages", "type": "array<string, string>", "required": true}
+          ],
+          "returns": "void",
+          "description": "Adds or overrides message templates for a locale."
+        },
+        {
+          "name": "setTestingMode",
+          "signature": "setTestingMode(bool $enabled = true): void",
+          "parameters": [
+            {"name": "enabled", "type": "bool", "default": "true"}
+          ],
+          "returns": "void",
+          "description": "Enables or disables upload test mode for PHPUnit/CLI."
+        }
+      ]
+    },
+    "AV": {
+      "class": "Arbor\\Validator\\AV",
+      "methods": [
+        {"name": "string", "returns": "Arbor\\Validator\\Schemas\\StringSchema"},
+        {"name": "int", "returns": "Arbor\\Validator\\Schemas\\IntSchema"},
+        {"name": "float", "returns": "Arbor\\Validator\\Schemas\\FloatSchema"},
+        {"name": "number", "returns": "Arbor\\Validator\\Schemas\\NumberSchema"},
+        {"name": "bool", "returns": "Arbor\\Validator\\Schemas\\BoolSchema"},
+        {"name": "boolean", "returns": "Arbor\\Validator\\Schemas\\BoolSchema"},
+        {
+          "name": "shape",
+          "parameters": [{"name": "fields", "type": "array<string, Schema>", "required": true}],
+          "returns": "Arbor\\Validator\\Schemas\\ShapeSchema"
+        },
+        {
+          "name": "array",
+          "parameters": [{"name": "schema", "type": "?Schema", "default": "null"}],
+          "returns": "Arbor\\Validator\\Schemas\\ArraySchema"
+        },
+        {
+          "name": "enum",
+          "parameters": [{"name": "cases", "type": "list<string|int|float>|class-string<\\BackedEnum>", "required": true}],
+          "returns": "Arbor\\Validator\\Schemas\\EnumSchema"
+        },
+        {"name": "file", "returns": "Arbor\\Validator\\Schemas\\FileSchema"},
+        {
+          "name": "preprocess",
+          "parameters": [
+            {"name": "fn", "type": "callable(mixed): mixed", "required": true},
+            {"name": "schema", "type": "Schema", "required": true}
+          ],
+          "returns": "Arbor\\Validator\\Schemas\\PreprocessSchema"
+        },
+        {"name": "coerce", "returns": "Arbor\\Validator\\Schemas\\CoerceBuilder"}
+      ]
+    }
+  },
+  "result_objects": {
+    "ValidationResult": {
+      "class": "Arbor\\Validator\\Core\\ValidationResult",
+      "methods": [
+        {"name": "isValid", "returns": "bool"},
+        {"name": "failed", "returns": "bool"},
+        {"name": "data", "returns": "mixed", "throws": ["Arbor\\Validator\\Exceptions\\ValidationException"]},
+        {"name": "safeData", "returns": "mixed"},
+        {"name": "errors", "returns": "array<string, list<string>>"},
+        {"name": "firstError", "returns": "?string"},
+        {"name": "error", "parameters": [{"name": "field", "type": "string"}], "returns": "?string"},
+        {"name": "fieldErrors", "parameters": [{"name": "field", "type": "string"}], "returns": "list<string>"},
+        {"name": "hasError", "parameters": [{"name": "field", "type": "string"}], "returns": "bool"}
+      ]
+    },
+    "UploadedFile": {
+      "class": "Arbor\\Validator\\Files\\UploadedFile",
+      "methods": [
+        {"name": "isValid", "returns": "bool"},
+        {"name": "clientName", "returns": "string"},
+        {"name": "getClientFilename", "returns": "string"},
+        {"name": "mimeType", "returns": "string", "description": "Real MIME from magic bytes"},
+        {"name": "getRealMimeType", "returns": "string"},
+        {"name": "getClientMimeType", "returns": "?string", "description": "Client reported header"},
+        {"name": "extension", "returns": "string"},
+        {"name": "getExtension", "returns": "string"},
+        {"name": "size", "returns": "int"},
+        {"name": "getSize", "returns": "int"},
+        {"name": "getRealPath", "returns": "string"},
+        {"name": "moveTo", "parameters": [{"name": "targetPath", "type": "string"}], "returns": "bool"}
+      ]
+    }
+  },
+  "attributes": [
+    {"name": "Required", "class": "Arbor\\Validator\\Attributes\\Required", "parameters": [{"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Optional", "class": "Arbor\\Validator\\Attributes\\Optional", "parameters": []},
+    {"name": "Nullable", "class": "Arbor\\Validator\\Attributes\\Nullable", "parameters": []},
+    {"name": "Email", "class": "Arbor\\Validator\\Attributes\\Email", "parameters": [{"name": "checkDns", "type": "bool", "default": "false"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Cpf", "class": "Arbor\\Validator\\Attributes\\Cpf", "parameters": [{"name": "stripMask", "type": "bool", "default": "false"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Cnpj", "class": "Arbor\\Validator\\Attributes\\Cnpj", "parameters": [{"name": "allowAlphanumeric", "type": "bool", "default": "true"}, {"name": "stripMask", "type": "bool", "default": "false"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Phone", "class": "Arbor\\Validator\\Attributes\\Phone", "parameters": [{"name": "format", "type": "?string", "default": "null"}, {"name": "country", "type": "?string", "default": "null"}, {"name": "stripMask", "type": "bool", "default": "false"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "FullName", "class": "Arbor\\Validator\\Attributes\\FullName", "parameters": [{"name": "minWords", "type": "int", "default": "2"}, {"name": "minWordLength", "type": "int", "default": "2"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "MinLength", "class": "Arbor\\Validator\\Attributes\\MinLength", "parameters": [{"name": "min", "type": "int", "required": true}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "MaxLength", "class": "Arbor\\Validator\\Attributes\\MaxLength", "parameters": [{"name": "max", "type": "int", "required": true}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "SameAs", "class": "Arbor\\Validator\\Attributes\\SameAs", "parameters": [{"name": "field", "type": "string", "required": true}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Date", "class": "Arbor\\Validator\\Attributes\\Date", "parameters": [{"name": "format", "type": "string", "default": "'Y-m-d'"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "DateTime", "class": "Arbor\\Validator\\Attributes\\DateTime", "parameters": [{"name": "format", "type": "string", "default": "'Y-m-d H:i:s'"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Time", "class": "Arbor\\Validator\\Attributes\\Time", "parameters": [{"name": "format", "type": "string", "default": "'H:i'"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Url", "class": "Arbor\\Validator\\Attributes\\Url", "parameters": [{"name": "protocols", "type": "list<string>", "default": "['http', 'https']"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Uuid", "class": "Arbor\\Validator\\Attributes\\Uuid", "parameters": [{"name": "version", "type": "int", "default": "0"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Domain", "class": "Arbor\\Validator\\Attributes\\Domain", "parameters": [{"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "NoHtml", "class": "Arbor\\Validator\\Attributes\\NoHtml", "parameters": [{"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Html", "class": "Arbor\\Validator\\Attributes\\Html", "parameters": [{"name": "sanitize", "type": "bool", "default": "false"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Emojis", "class": "Arbor\\Validator\\Attributes\\Emojis", "parameters": [{"name": "allow", "type": "bool", "default": "true"}, {"name": "only", "type": "bool", "default": "false"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "UploadedFile", "class": "Arbor\\Validator\\Attributes\\UploadedFile", "parameters": [{"name": "maxSize", "type": "string|int|null", "default": "null"}, {"name": "minSize", "type": "string|int|null", "default": "null"}, {"name": "extensions", "type": "list<string>", "default": "[]"}, {"name": "mimeTypes", "type": "list<string>", "default": "[]"}, {"name": "allowNonUploadedFiles", "type": "bool", "default": "false"}, {"name": "message", "type": "?string", "default": "null"}]},
+    {"name": "Nested", "class": "Arbor\\Validator\\Attributes\\Nested", "parameters": [{"name": "dtoClass", "type": "?string", "default": "null"}]},
+    {"name": "Each", "class": "Arbor\\Validator\\Attributes\\Each", "parameters": [{"name": "type", "type": "string", "required": true}]},
+    {"name": "Transform", "class": "Arbor\\Validator\\Attributes\\Transform", "parameters": [{"name": "transformer", "type": "callable|string", "required": true}]},
+    {"name": "Coerce", "class": "Arbor\\Validator\\Attributes\\Coerce", "parameters": [{"name": "type", "type": "?string", "default": "null"}, {"name": "dateFormat", "type": "?string", "default": "null"}]}
+  ]
+}
